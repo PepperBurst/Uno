@@ -13,7 +13,7 @@ class Game(object):
         print('Game start')
         firstTurn = random.randint(0, playerCount-1)
         for i in range(playerCount):
-            playerList.getPlayer(i).startDraw(deck)
+            playerList.getPlayerAt(i).startDraw(deck)
         pile.discard(deck.drawCard())
         return firstTurn
 
@@ -41,19 +41,59 @@ class Game(object):
         return dropCard
 
     def clear(self):
-        os.system('cls')
+        os.system('clear')
 
     def discardLoop(self, deck, pile, currentPlayer):
+        # if(not currentPlayer.drawStatus()):
         discard = False
+        skipTurn = False
         currentPlayer.displayHand()
-        while discard is False:
-            dropIndex = int(input('Choose card to discard: '))
-            if(self.checkDrop(dropIndex-1, pile, currentPlayer)):
-                #print(currentPlayer.getCardAt(dropIndex-1))
-                pile.discard(currentPlayer.discard(dropIndex-1))
-                discard = True
+        while((discard is False) and (skipTurn is False)):
+            if(not currentPlayer.drawStatus):
+                dropIndex = self.checkIndexRange(currentPlayer)
+                if(self.checkDrop(dropIndex-1, pile, currentPlayer)):
+                    #print(currentPlayer.getCardAt(dropIndex-1))
+                    pile.discard(currentPlayer.discard(dropIndex-1))
+                    discard = True
+                else:
+                    self.clear()
+                    print('Choose another card to discard')
+                    pile.showLast()
+                    currentPlayer.displayHand()
             else:
-                self.clear()
-                print('Choose another card to discard')
-                pile.showLast()
-                currentPlayer.displayHand()
+                if(self.checkDiscard(deck, pile, currentPlayer)):
+                    dropIndex = self.checkIndexRange(currentPlayer)
+                    if(self.checkDrop(dropIndex-1, pile, currentPlayer)):
+                        #print(currentPlayer.getCardAt(dropIndex-1))
+                        pile.discard(currentPlayer.discard(dropIndex-1))
+                        discard = True
+                    else:
+                        self.clear()
+                        print('Choose another card to discard')
+                        pile.showLast()
+                        currentPlayer.displayHand()
+                else:
+                    print('The card you drew cannot be discarded. Skipping turn')
+                    skipTurn = True
+        currentPlayer.updateDrawStatus(False)
+
+    def checkIndexRange(self, player):
+        endLoop = False
+        dropIndex = 0
+        while endLoop is False:
+            dropIndex = int(input('Choose card to discard: '))
+            if(dropIndex > len(player.hand)):
+                print('Index out of range!')
+                print('Choose a number within the index range 1 to ' + str(len(player.hand)))
+            else:
+                endLoop = True
+        return dropIndex
+
+    def getTurnIncrement(self, playerList):
+        turnIncrement = 0
+        for player in playerList.list:
+            if(player.done):
+                turnIncrement =+ 1
+        return turnIncrement
+
+    # def isNextDone(self, player):

@@ -15,3 +15,7 @@ class Pile(object):
 
     def getLast(self):
         return self.cards[-1]
+
+    def removeAll(self):
+        self.cards.clear()
+        

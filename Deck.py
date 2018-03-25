@@ -31,3 +31,9 @@ class Deck(object):
         if not self.cards:
             empty = True
         return empty
+
+    def returnToDeck(self, pile, shuffleCount):
+        self.cards = pile.cards.copy()
+        pile.removeAll()
+        for i in range(shuffleCount):
+            self.shuffle()

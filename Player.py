@@ -1,11 +1,15 @@
 class Player(object):
     playerCount = 0
-    def __init__(self):
+    finishedCount = 0
+    def __init__(self, name):
         self.hand = []
+        self.name = name
+        self.drawStatus = False
+        self.done = False
         Player.playerCount += 1
 
-    def setName(self, name):
-        self.name = name
+    # def setName(self, name):
+    #     self.name = name
 
     def getName(self):
         return self.name
@@ -41,3 +45,20 @@ class Player(object):
     def displayHand(self):
         print(self.getName() + "\'s hand:")
         self.showHand()
+
+    def setDone(self, done):
+        self.done = done
+        Player.playerCount -= 1
+        Player.finishedCount += 1
+
+    def isDone(self):
+        return self.done
+
+    def updateDrawStatus(self, status):
+        self.drawStatus = status
+
+    def checkRepeatedDraw(self):
+        status = False
+        if(self.drawStatus):
+            status = True
+        return status
